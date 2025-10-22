@@ -1,0 +1,137 @@
+{
+  "model_loading": "success",
+  "./robust_test_result/forward_prediction": {
+    "test_case1": {
+      "input": {
+        "patch_length": 20.0,
+        "patch_width": 15.0,
+        "substrate_thickness": 1.6,
+        "substrate_epsr": 4.4,
+        "substrate_length": 30.0,
+        "substrate_width": 25.0,
+        "ground_length": 30.0,
+        "ground_width": 25.0,
+        "ground_thickness": 0.035,
+        "operating_frequency": 2.4,
+        "feed_position": 0.25
+      },
+      "output": {
+        "resonance_frequency": 3.6885780578592957,
+        "bandwidth": 400.1163377653023,
+        "gain": -2.1115723056097746,
+        "s11": -3.0069152312439678
+      }
+    },
+    "test_case2": {
+      "input": {
+        "patch_length": 10.0,
+        "patch_width": 8.0,
+        "substrate_thickness": 0.8,
+        "substrate_epsr": 3.38,
+        "substrate_length": 15.0,
+        "substrate_width": 12.0,
+        "ground_length": 15.0,
+        "ground_width": 12.0,
+        "ground_thickness": 0.017,
+        "operating_frequency": 5.8,
+        "feed_position": 0.3
+      },
+      "output": {
+        "resonance_frequency": 7.867668031356292,
+        "bandwidth": 400.2421168725172,
+        "gain": -1.1049421462386357,
+        "s11": -3.018907782736718
+      }
+    }
+  },
+  "forward_prediction": {
+    "status": "failed",
+    "error": "'forward_prediction'"
+  },
+  "inverse_design": {
+    "test_case1": {
+      "target": {
+        "resonance_frequency": 2.4,
+        "bandwidth": 80,
+        "gain": 5.0,
+        "s11": -18.0
+      },
+      "design": {
+        "patch_length": 37.09154938886127,
+        "patch_width": 20.771734007778534,
+        "substrate_thickness": 1.2402496143078916,
+        "substrate_epsr": 3.6702977250594477,
+        "substrate_length": 54.98215871122299,
+        "substrate_width": 30.74630381321419,
+        "ground_length": 55.13198065905178,
+        "ground_width": 30.846316227248792,
+        "ground_thickness": 0.02877544702830846,
+        "operating_frequency": 3.345891494593451,
+        "feed_position": 0.6555461233613809
+      },
+      "verified_performance": {
+        "resonance_frequency": 2.12443550546781,
+        "bandwidth": 398.78580483324924,
+        "gain": -2.3555458733454597,
+        "s11": -3.0043607647343684
+      }
+    },
+    "test_case2": {
+      "target": {
+        "resonance_frequency": 3.5,
+        "bandwidth": 150,
+        "gain": 6.0,
+        "s11": -20.0
+      },
+      "design": {
+        "patch_length": 37.09154938886127,
+        "patch_width": 20.771734007778534,
+        "substrate_thickness": 1.2401270168294434,
+        "substrate_epsr": 3.6702977250594477,
+        "substrate_length": 54.982163673244244,
+        "substrate_width": 30.74630381321419,
+        "ground_length": 55.13197063231829,
+        "ground_width": 30.846316227248792,
+        "ground_thickness": 0.028903628645872412,
+        "operating_frequency": 3.343456697228612,
+        "feed_position": 0.6624040743748731
+      },
+      "verified_performance": {
+        "resonance_frequency": 2.1237843884703924,
+        "bandwidth": 398.8003231419744,
+        "gain": -2.3553887829289675,
+        "s11": -3.0045545946387127
+      }
+    },
+    "status": "success"
+  },
+  "errors": {
+    "\u6d4b\u8bd5\u6848\u4f8b1": {
+      "frequency_error": 0.27556449453219,
+      "bandwidth_error": 318.78580483324924,
+      "gain_error": 7.355545873345459,
+      "s11_error": 14.995639235265632,
+      "frequency_relative_error": 11.481853938841251,
+      "bandwidth_relative_error": 398.4822560415615
+    },
+    "\u6d4b\u8bd5\u6848\u4f8b2": {
+      "frequency_error": 1.3762156115296076,
+      "bandwidth_error": 248.8003231419744,
+      "gain_error": 8.355388782928967,
+      "s11_error": 16.995445405361288,
+      "frequency_relative_error": 39.32044604370307,
+      "bandwidth_relative_error": 165.86688209464958
+    }
+  },
+  "model_performance": {
+    "mse_loss": 0.49786001443862915,
+    "mae_frequency": 0.0357557088136673,
+    "mae_bandwidth": 0.12391030043363571,
+    "mae_gain": 0.04847600311040878,
+    "mae_s11": 0.7115235924720764,
+    "test_samples": 1000
+  },
+  "test_time": "2025-10-22 15:32:22",
+  "device": "cuda",
+  "overall_result": "FAIL"
+}

@@ -1,12 +1,3 @@
-"""
-改进版天线设计框架 - 考虑介质板和接地部分影响
-Enhanced Antenna Design Framework - Considering Substrate and Ground Plane Effects
-
-作者: 豆包AI助手
-日期: 2025年10月22日
-版本: 2.0
-"""
-
 import os
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"

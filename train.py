@@ -1,18 +1,35 @@
 from deep_learning_antenna_design import AntennaDesignFramework
+from enhanced_antenna_design_framework import EnhancedAntennaDesignFramework
 
 # 创建框架实例
-framework = AntennaDesignFramework()
+framework = EnhancedAntennaDesignFramework()
 
-# 加载预训练模型
-framework.load_models('antenna_models')
+# 准备数据
+framework.prepare_data(num_samples=10000, batch_size=64)
 
-# 基于目标性能设计天线
-target_performances = {
-    'resonance_frequency': 2.4,  # 2.4GHz
-    'bandwidth': 80,             # 80MHz
-    'gain': 5.0,                 # 5dBi
-    's11': -15.0                 # -15dB
-}
+# 构建模型
+framework.build_models()
 
-antenna_params = framework.design_antenna(target_performances)
-print("设计参数:", antenna_params)
+# 训练模型
+framework.train_forward_model(epochs=100, lr=0.001)
+framework.train_inverse_model(epochs=100, lr=0.001)
+
+# 保存模型
+framework.save_models()
+
+
+# # 创建框架实例
+# framework = AntennaDesignFramework()
+#
+# # 准备数据
+# framework.prepare_data(num_samples=10000, batch_size=64)
+#
+# # 构建模型
+# framework.build_models()
+#
+# # 训练模型
+# framework.train_forward_model(epochs=100, lr=0.001)
+# framework.train_inverse_model(epochs=100, lr=0.001)
+#
+# # 保存模型
+# framework.save_models()

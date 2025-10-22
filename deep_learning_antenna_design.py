@@ -1,10 +1,6 @@
-"""
-基于PyTorch的深度学习天线结构设计框架
-Deep Learning Antenna Design Framework using PyTorch
-
-作者: 豆包AI助手
-日期: 2025年10月21日
-"""
+import os
+# 设置环境变量以避免OpenMP重复链接警告
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 import torch
 import torch.nn as nn
@@ -14,7 +10,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from scipy import interpolate
-import os
 from datetime import datetime
 import random
 
@@ -22,7 +17,6 @@ import random
 np.random.seed(42)
 torch.manual_seed(42)
 random.seed(42)
-
 
 class AntennaDataset(data.Dataset):
     """
@@ -35,6 +29,13 @@ class AntennaDataset(data.Dataset):
     - dielectric_constant: 介质常数
     - frequency: 工作频率 (GHz)
 
+    - length_sub: 介质板长度 (mm)
+    - width_sub: 介质板宽度 (mm)
+    - height_sub: 介质板厚度 (mm)
+
+    -length_gnd:    接地板长度
+    -width_gnd:     接地板宽度
+    -height_gnd:    接地板厚度
     输出性能指标:
     - resonance_frequency: 谐振频率 (GHz)
     - bandwidth: 带宽 (MHz)
@@ -56,13 +57,22 @@ class AntennaDataset(data.Dataset):
         """生成天线设计数据"""
         # 天线结构参数范围
         self.parameters = {
-            'length': np.random.uniform(5, 50, self.num_samples),  # 长度 5-50mm
-            'width': np.random.uniform(2, 20, self.num_samples),  # 宽度 2-20mm
-            'height': np.random.uniform(0.5, 5, self.num_samples),  # 高度 0.5-5mm
+            'length': np.random.uniform(5, 50, self.num_samples),           # 长度 5-50mm
+            'width': np.random.uniform(2, 20, self.num_samples),            # 宽度 2-20mm
+            'height': np.random.uniform(0.5, 5, self.num_samples),          # 高度 0.5-5mm
             'dielectric_constant': np.random.uniform(2.2, 10.2, self.num_samples),  # 介质常数
-            'frequency': np.random.uniform(1, 10, self.num_samples)  # 工作频率 1-10GHz
+            'frequency': np.random.uniform(1, 10, self.num_samples),        # 工作频率 1-10GHz
         }
+        self.parameters = {
+        # -------------------------------------------------------------------------------
+            'length_sub': np.random.uniform(self.parameters['length'], 100, self.num_samples),  # 介质板长度(mm)
+            'width_sub': np.random.uniform(self.parameters['width'], 100, self.num_samples),  # 介质板宽度(mm)
+            'height_sub': np.random.uniform(self.parameters['height'], 5, self.num_samples),  # 介质板厚度(mm)
 
+            'length_gnd': np.random.uniform(1, self.parameters['length_sub'], self.num_samples),  # 接地板长度(mm)
+            'width_gnd': np.random.uniform(1, self.parameters['width_sub'], self.num_samples),    # 接地板宽度(mm)
+            'height_gnd': np.random.uniform(0.01, 5, self.num_samples)                      # 接地板厚度(mm)
+        }
         # 基于电磁理论计算性能指标（简化模型）
         self.performances = self.calculate_performances()
 
@@ -80,9 +90,7 @@ class AntennaDataset(data.Dataset):
         bandwidth = np.clip(bandwidth, 20, 200)  # 限制在合理范围内
 
         # 计算增益 (简化模型)
-        gain = 2.15 + 0.1 * params['length'] + 0.05 * params['width'] - 0.2 * params['height'] + np.random.normal(0,
-                                                                                                                  0.3,
-                                                                                                                  self.num_samples)
+        gain = 2.15 + 0.1 * params['length'] + 0.05 * params['width'] - 0.2 * params['height'] + np.random.normal(0, 0.3, self.num_samples)
         gain = np.clip(gain, 0, 10)  # 限制在合理范围内
 
         # 计算回波损耗 S11 (简化模型)
@@ -143,12 +151,16 @@ class AntennaDataset(data.Dataset):
 
         return torch.tensor(param_values), torch.tensor(perf_values)
 
-
 class AntennaForwardModel(nn.Module):
     """
     天线正向预测模型
     输入: 天线结构参数 (5维)
     输出: 天线性能指标 (4维)
+    """
+    """
+        天线正向预测模型
+        输入: 天线结构参数 (5维)
+        输出: 天线性能指标 (4维)
     """
 
     def __init__(self, input_dim=5, output_dim=4):
@@ -172,7 +184,6 @@ class AntennaForwardModel(nn.Module):
 
     def forward(self, x):
         return self.network(x)
-
 
 class AntennaInverseModel(nn.Module):
     """
@@ -203,7 +214,6 @@ class AntennaInverseModel(nn.Module):
 
     def forward(self, x):
         return self.network(x)
-
 
 class AntennaDesignFramework:
     """
@@ -291,7 +301,7 @@ class AntennaDesignFramework:
             self.forward_history['val_loss'].append(val_loss)
 
             if (epoch + 1) % 10 == 0:
-                print(f"正向模型 - 第 {epoch + 1}/{epochs} 轮: 训练损失 {avg_loss:.6f}, 验证损失 {val_loss:.6f}")
+                print(f"正向模型 - 第 {epoch+1}/{epochs} 轮: 训练损失 {avg_loss:.6f}, 验证损失 {val_loss:.6f}")
 
         print("正向预测模型训练完成")
 
@@ -330,7 +340,7 @@ class AntennaDesignFramework:
             self.inverse_history['val_loss'].append(val_loss)
 
             if (epoch + 1) % 10 == 0:
-                print(f"逆向模型 - 第 {epoch + 1}/{epochs} 轮: 训练损失 {avg_loss:.6f}, 验证损失 {val_loss:.6f}")
+                print(f"逆向模型 - 第 {epoch+1}/{epochs} 轮: 训练损失 {avg_loss:.6f}, 验证损失 {val_loss:.6f}")
 
         print("逆向设计模型训练完成")
 
@@ -454,23 +464,22 @@ class AntennaDesignFramework:
 
         # 绘制天线主体
         antenna = patches.Rectangle((0, 0), length, width, linewidth=2,
-                                    edgecolor='blue', facecolor='lightblue', alpha=0.7)
+                                   edgecolor='blue', facecolor='lightblue', alpha=0.7)
         ax.add_patch(antenna)
 
         # 绘制馈电点
-        feed_point = patches.Circle((length / 2, width / 2), 0.5, color='red')
+        feed_point = patches.Circle((length/2, width/2), 0.5, color='red')
         ax.add_patch(feed_point)
 
         # 添加标注
-        ax.text(length / 2, width / 2, '馈电点', ha='center', va='center', fontweight='bold')
-        ax.text(length / 2, -width / 2, f'长度: {length:.1f}mm', ha='center', va='center')
-        ax.text(-length / 4, width / 2, f'宽度: {width:.1f}mm', ha='center', va='center', rotation=90)
+        ax.text(length/2, width/2, '馈电点', ha='center', va='center', fontweight='bold')
+        ax.text(length/2, -width/2, f'长度: {length:.1f}mm', ha='center', va='center')
+        ax.text(-length/4, width/2, f'宽度: {width:.1f}mm', ha='center', va='center', rotation=90)
 
-        ax.set_xlim(-length / 2, length * 1.5)
+        ax.set_xlim(-length/2, length * 1.5)
         ax.set_ylim(-width, width * 1.5)
         ax.set_aspect('equal')
-        ax.set_title(
-            f'天线结构设计\n介质常数: {parameters["dielectric_constant"]:.2f}, 高度: {parameters["height"]:.2f}mm')
+        ax.set_title(f'天线结构设计\n介质常数: {parameters["dielectric_constant"]:.2f}, 高度: {parameters["height"]:.2f}mm')
         ax.grid(True, alpha=0.3)
 
         plt.savefig(save_path, dpi=300, bbox_inches='tight')
@@ -522,12 +531,12 @@ class AntennaDesignFramework:
 
         print(f"模型已从 {load_dir} 目录加载")
 
-
 def main():
     """主函数"""
-    print("=" * 60)
+    print("="*60)
     print("基于PyTorch的深度学习天线结构设计框架")
-    print("=" * 60)
+    print("版本: 1.1 (修复OpenMP警告)")
+    print("="*60)
 
     # 创建天线设计框架实例
     framework = AntennaDesignFramework()
@@ -548,9 +557,9 @@ def main():
     # 步骤5: 保存模型
     framework.save_models()
 
-    print("\n" + "=" * 60)
+    print("\n" + "="*60)
     print("模型训练完成！开始演示天线设计功能...")
-    print("=" * 60)
+    print("="*60)
 
     # 演示1: 正向预测 - 已知结构参数预测性能
     print("\n【演示1: 正向预测】")
@@ -570,9 +579,9 @@ def main():
     print("\n【演示2: 逆向设计】")
     target_performances = {
         'resonance_frequency': 2.4,  # 目标谐振频率 2.4GHz
-        'bandwidth': 80,  # 目标带宽 80MHz
-        'gain': 5.0,  # 目标增益 5dBi
-        's11': -15.0  # 目标回波损耗 -15dB
+        'bandwidth': 80,             # 目标带宽 80MHz
+        'gain': 5.0,                 # 目标增益 5dBi
+        's11': -15.0                 # 目标回波损耗 -15dB
     }
 
     designed_parameters = framework.design_antenna(target_performances)
@@ -586,14 +595,13 @@ def main():
     # 可视化设计结果
     framework.visualize_antenna_structure(designed_parameters, 'designed_antenna.png')
 
-    print("\n" + "=" * 60)
+    print("\n" + "="*60)
     print("天线设计演示完成！")
     print("生成的文件:")
     print("- training_history.png: 训练历史图")
     print("- designed_antenna.png: 天线设计结构图")
     print("- antenna_models/: 训练好的模型文件")
-    print("=" * 60)
-
+    print("="*60)
 
 if __name__ == "__main__":
     main()

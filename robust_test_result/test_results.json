@@ -131,7 +131,7 @@
     "mae_s11": 0.7115235924720764,
     "test_samples": 1000
   },
-  "test_time": "2025-10-22 15:32:22",
+  "test_time": "2025-10-24 15:10:35",
   "device": "cuda",
   "overall_result": "FAIL"
 }

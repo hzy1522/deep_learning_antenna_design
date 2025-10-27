@@ -418,7 +418,10 @@ class RobustAntennaDataset(data.Dataset):
         self.use_cst = use_cst
 
         # 初始化CST仿真器
-        self.cst_simulator = CSTAntennaSimulator()
+        self.cst_simulator = CSTAntennaSimulator(visible=True)
+        # 新增调试输出（在这里添加）
+        print(f"[调试] CST COM接口可用: {self.cst_simulator.com_available}")
+        print(f"[调试] CST连接状态: {self.cst_simulator.cst is not None}")
 
         # 生成天线参数数据
         self.generate_antenna_data()
@@ -760,7 +763,10 @@ class ImprovedAntennaDesignFramework:
         self.inverse_history = {'loss': [], 'val_loss': []}
 
         # CST仿真器
-        self.cst_simulator = CSTAntennaSimulator()
+        self.cst_simulator = CSTAntennaSimulator(visible=True)
+        # 新增调试输出（在这里添加）
+        print(f"[调试] CST COM接口可用: {self.cst_simulator.com_available}")
+        print(f"[调试] CST连接状态: {self.cst_simulator.cst is not None}")
 
     def prepare_data(self, num_samples=15000, test_ratio=0.2, batch_size=64):
         """准备训练和测试数据"""
@@ -1008,10 +1014,22 @@ class ImprovedAntennaDesignFramework:
 
     def simulate_design(self, parameters, use_cst=True):
         """使用CST仿真验证设计结果"""
+        # 新增调试输出（在这里添加）
+        print(f"[调试] 准备调用CST仿真，参数: {parameters}")
+        print(f"[调试] 当前CST可用状态: {self.cst_simulator.com_available}")
+
         if use_cst and self.cst_simulator.com_available:
-            print("使用CST仿真验证设计...")
-            result = self.cst_simulator.simulate_antenna(parameters)
-            return result
+            try:  # 在这里添加try
+                print("[调试] 开始CST仿真...")
+                print("使用CST仿真验证设计...")
+                result = self.cst_simulator.simulate_antenna(parameters)
+                print("[调试] CST仿真成功")
+                return result
+            except Exception as e:
+                print(f"[错误] CST仿真失败: {str(e)}")
+                # 打印详细错误栈，便于调试
+                import traceback
+                traceback.print_exc()
         else:
             print("使用理论计算验证设计...")
             result = self.cst_simulator.theoretical_calculation(parameters)
@@ -1238,7 +1256,10 @@ class ImprovedAntennaDesignFramework:
         self.inverse_model.eval()
 
         # 初始化CST仿真器
-        self.cst_simulator = CSTAntennaSimulator()
+        self.cst_simulator = CSTAntennaSimulator(visible=True)
+        # 新增调试输出（在这里添加）
+        print(f"[调试] CST COM接口可用: {self.cst_simulator.com_available}")
+        print(f"[调试] CST连接状态: {self.cst_simulator.cst is not None}")
 
         print(f"鲁棒版模型已从 {load_dir} 目录加载")
 
